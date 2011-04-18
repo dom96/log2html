@@ -90,6 +90,18 @@ proc formatAgent(agent: string, count: int): string =
   else:
     return agent
 
+proc insertBotTd(isBot: TBotEnum): string =
+  case isBot:
+  of googleBot:
+    return "<td class=\"googlebot\">Google Bot</td>"
+  of yahooBot:
+    return "<td class=\"yahoobot\">Yahoo Bot</td>"
+  of bingBot:
+    return "<td class=\"bingbot\">Bing Bot</td>"
+  of bot:
+    return "<td>Bot</td>"
+  of noBot: return ""
+
 include "templ.html"
 
 proc createReport*(file: string, output: string) =

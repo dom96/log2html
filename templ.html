@@ -34,9 +34,9 @@
 	    word-wrap: break-word;
 	  }
 	  
-	  td.four { background-color: #F11313; color: #ffffff; }
-	  td.three { background-color: #1e90ff; color: #ffffff; }
-	  td.two { background-color: #08c700; }
+	  td.c4 { background-color: #F11313; color: #ffffff; }
+	  td.c3 { background-color: #1e90ff; color: #ffffff; }
+	  td.c2 { background-color: #08c700; }
 	  
 	  td.googlebot { background-color: #FF5C00; }
 	  td.yahoobot { background-color: #eff41d; }
@@ -100,36 +100,13 @@
         <td>${i.rqMethod}</td>
         <td>${shorten(i.rqPath, 10)}</td>
         <td>${i.rqHTTPVer}</td>
-        #case i.code[0]
-        #of '4':
-          <td class="code four">
+        <td class="code c${i.code[0]}">
             ${acronym(i.code, describeHTTPCode(i.code))}
-          </td>
-        #of '3':
-          <td class="code three">
-            ${acronym(i.code, describeHTTPCode(i.code))}
-          </td>
-        #of '2':
-          <td class="code two">
-            ${acronym(i.code, describeHTTPCode(i.code))}
-          </td>
-        #else:
-        <td class="code">${acronym(i.code, describeHTTPCode(i.code))}</td>
-        #end case
+        </td>
         <td>${shorten(i.referrer, 15)}</td>
         <td class="agent">${formatAgent(i.agent, 15)}</td>
         <td>${formatSize(i.size)}</td>
-        #case i.isBot:
-        #of googleBot:
-        <td class="googlebot">Google Bot</td>
-        #of yahooBot:
-        <td class="yahoobot">Yahoo Bot</td>
-        #of bingBot:
-        <td class="bingbot">Bing Bot</td>
-        #of bot:
-        <td>Bot</td>
-        #of noBot: nil
-        #end case
+        ${insertBotTd(i.isBot)}
       </tr>
       #end for
     </table>
