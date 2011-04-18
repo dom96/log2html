@@ -1,0 +1,138 @@
+#! stdtmpl | standard
+#include "boilerplate.css"
+#proc genHtml*(info: TInfo): string =
+#  result = ""
+<!doctype html>
+<html lang="en">
+<head>
+	<title>log2html output</title>
+
+  <style type="text/css">
+    ${getBoilerplate()}
+  </style>
+
+	<style type="text/css">
+	  th { 
+	    border-left: 1px solid #1965c5;
+	    border-right: 1px solid #1965c5;
+
+	    background-color: #f6640f;
+	    color: #ffffff;
+	    padding-left: 0.25em;
+	    padding-right: 0.25em;
+	  }
+	  
+	  td {
+	    padding-left: 0.5em;
+	    padding-right: 0.5em;
+	    padding-top: 0.25em;
+	    padding-bottom: 0.25em;
+	    border-top: 1px solid #1965c5;
+	    border-left: 1px solid #1965c5;
+	    border-right: 1px solid #1965c5;
+	    
+	    word-wrap: break-word;
+	  }
+	  
+	  td.four { background-color: #F11313; color: #ffffff; }
+	  td.three { background-color: #1e90ff; color: #ffffff; }
+	  td.two { background-color: #08c700; }
+	  
+	  td.googlebot { background-color: #FF5C00; }
+	  td.yahoobot { background-color: #eff41d; }
+	  td.bingbot { background-color: #C17FFF; }
+	  
+	  td.agent { max-width: 250px; }
+	  
+	  tr.get {
+	    background-color: #08c700;
+	  }
+	  tr.bot { color: #6d6d6d; }
+	  
+	  tr.head {
+	    background-color: #FFCE1B;
+	  }
+	  div#container {
+	    margin-left: 2em;
+	  }
+	  span.special { color: #AF0E0E; }
+	  abbr, acronym { cursor: help; }
+	  acronym { border-bottom: 0; }
+	</style>
+</head>
+<body>
+  <div id="container">
+    <p><span class="special">Oldest request:</span> ${info.visits[0].time}</p>
+    <p><span class="special">Latest request:</span> ${info.visits[info.visits.len-1].time}
+    <p><span class="special">Total size of requests:</span> ${round(info.total / 1024.0)} Mb</p>
+    <p><span class="special">Total number of requests:</span> ${info.visits.len()}</p>
+    <br/>
+    <table>
+      <tr>
+        <th><p>Remote</p><p>Host</p></th>
+        <th><p>Server</p><p>Name</p></th>
+        <th>Time</th>
+        <th><p>Request</p><p>Method</p></th>
+        <th><p>Requested</p><p>File</p></th>
+        <th><p>Client</p><p>HTTP Version</p></th>
+        <th><p>Reply</p><p>code</p></th>
+        <th>Referrer</th>
+        <th>Agent</th>
+        <th>Size</th>
+        <th><p>Extra</p><p>Information</p></th>
+      </tr>
+      #for i in items(info.visits):
+      #case i.rqMethod
+      #of "GET":
+        #if i.isBot == bot:
+        <tr class="get bot">
+        #else:
+        <tr class="get">
+        #end if
+      #of "HEAD":
+      <tr class="head">
+      #else:
+      <tr>
+      #end case
+        <td>${i.remoteHost}</td>
+        <td>${i.serverName}</td>
+        <td>${i.time}</td>
+        <td>${i.rqMethod}</td>
+        <td>${shorten(i.rqPath, 10)}</td>
+        <td>${i.rqHTTPVer}</td>
+        #case i.code[0]
+        #of '4':
+          <td class="code four">
+            ${acronym(i.code, describeHTTPCode(i.code))}
+          </td>
+        #of '3':
+          <td class="code three">
+            ${acronym(i.code, describeHTTPCode(i.code))}
+          </td>
+        #of '2':
+          <td class="code two">
+            ${acronym(i.code, describeHTTPCode(i.code))}
+          </td>
+        #else:
+        <td class="code">${acronym(i.code, describeHTTPCode(i.code))}</td>
+        #end case
+        <td>${shorten(i.referrer, 15)}</td>
+        <td class="agent">${formatAgent(i.agent, 15)}</td>
+        <td>${formatSize(i.size)}</td>
+        #case i.isBot:
+        #of googleBot:
+        <td class="googlebot">Google Bot</td>
+        #of yahooBot:
+        <td class="yahoobot">Yahoo Bot</td>
+        #of bingBot:
+        <td class="bingbot">Bing Bot</td>
+        #of bot:
+        <td>Bot</td>
+        #of noBot: nil
+        #end case
+      </tr>
+      #end for
+    </table>
+  </div>
+</body>
+</html>
